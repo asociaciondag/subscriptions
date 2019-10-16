@@ -34,6 +34,7 @@ class FollowNewDiscussions
 
     public function handle(Posted $event)
     {
+        $actor = $event->actor;
         $post = $event->post;
         $discussion = $post->discussion;
         $users = [];
@@ -53,7 +54,10 @@ class FollowNewDiscussions
 
                     $state->subscription = 'follow';
                     $state->save();
-                    $users[] = $user;
+
+                    if ($actor !== $user) {
+                        $users[] = $user;
+                    }
                 }
             }
         }
