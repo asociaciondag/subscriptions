@@ -49,7 +49,7 @@ class FollowNewDiscussions
                         continue;
                     }
 
-                    $state = $post->discussion->stateFor($user);
+                    $state = $discussion->stateFor($user);
 
                     $state->subscription = 'follow';
                     $state->save();
@@ -60,7 +60,7 @@ class FollowNewDiscussions
 
         $this->notifications->sync(
             new NewPostBlueprint($post),
-            $users->all()
+            $users
         );
     }
 }
