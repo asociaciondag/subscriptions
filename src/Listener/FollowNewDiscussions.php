@@ -15,6 +15,7 @@ use Flarum\Notification\NotificationSyncer;
 use Flarum\Post\Event\Posted;
 use Flarum\User\User;
 use Flarum\Subscriptions\Notification\NewPostBlueprint;
+use Flarum\Group\Permission;
 
 class FollowNewDiscussions
 {
@@ -34,19 +35,27 @@ class FollowNewDiscussions
     public function handle(Posted $event)
     {
         $post = $event->post;
+        $discussion = $post->discussion;
+        $users = [];
 
-        $users = User::all()->filter(function ($user) use ($post) {
-            return $user->exists
-                && $user->getPreference('followNewDiscussions')
-                && $post->isVisibleTo($user)
-                && !$user->isGuest();
-        });
+        foreach ($discussion->tags as $tag) {
+            $permission = "tag{$tag->id}.viewDiscussions";
 
-        foreach ($users as $user) {
-            $state = $post->discussion->stateFor($user);
+            $groupPermissions = Permission::where('permission', $permission)->get();
 
-            $state->subscription = 'follow';
-            $state->save();
+            foreach ($groupPermissions as $groupPermission) {
+                foreach ($groupPermission->group->users as $user) {
+                    if (!$user->getPreference('followNewDiscussions')) {
+                        continue;
+                    }
+
+                    $state = $post->discussion->stateFor($user);
+
+                    $state->subscription = 'follow';
+                    $state->save();
+                    $users[] = $user;
+                }
+            }
         }
 
         $this->notifications->sync(
