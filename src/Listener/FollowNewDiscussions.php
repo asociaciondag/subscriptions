@@ -16,6 +16,7 @@ use Flarum\Post\Event\Posted;
 use Flarum\User\User;
 use Flarum\Subscriptions\Notification\NewPostBlueprint;
 use Flarum\Group\Permission;
+use Flarum\Group\Group;
 
 class FollowNewDiscussions
 {
@@ -45,26 +46,31 @@ class FollowNewDiscussions
             $groupPermissions = Permission::where('permission', $permission)->get();
 
             foreach ($groupPermissions as $groupPermission) {
-                foreach ($groupPermission->group->users as $user) {
-                    if (!$user->getPreference('followNewDiscussions')) {
-                        continue;
-                    }
-
-                    $state = $discussion->stateFor($user);
-
-                    $state->subscription = 'follow';
-                    $state->save();
-
-                    if ($actor !== $user) {
-                        $users[] = $user;
-                    }
-                }
+                self::subscribeGroup($groupPermission->group, $discussion, $users);
             }
         }
+
+        $adminGroup = Group::where('id', 1)->first();
+
+        self::subscribeGroup($adminGroup, $discussion, $users);
 
         $this->notifications->sync(
             new NewPostBlueprint($post),
             $users
         );
+    }
+
+    private static function subscribeGroup(Group $group, $discussion, &$users) {
+        foreach ($group->users as $user) {
+            if (!$user->getPreference('followNewDiscussions')) {
+                continue;
+            }
+
+            $state = $discussion->stateFor($user);
+
+            $state->subscription = 'follow';
+            $state->save();
+            $users[] = $user;
+        }
     }
 }
