@@ -5,11 +5,12 @@
     "keywords": ["discussion"],
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/flarum/core/issues",
-        "source": "https://github.com/flarum/subscriptions"
+        "issues": "https://github.com/asociaciondag/subscriptions/issues",
+        "source": "https://github.com/asociaciondag/subscriptions"
     },
     "require": {
-        "flarum/core": "^0.1.0-beta.13"
+        "flarum/core": "^0.1.0-beta.13",
+        "flarum/subscriptions": "^0.1.0-beta.13"
     },
     "autoload": {
         "psr-4": {
@@ -17,11 +18,8 @@
         }
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "0.1.x-dev"
-        },
         "flarum-extension": {
-            "title": "Subscriptions DAG",
+            "title": "Subscriptions (Follow new discussions)",
             "icon": {
                 "name": "fas fa-star",
                 "backgroundColor": "#ffea7b",
