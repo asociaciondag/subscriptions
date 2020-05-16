@@ -1,6 +1,6 @@
 {
-    "name": "flarum/subscriptions",
-    "description": "Allow users to follow discussions and receive notifications for new posts.",
+    "name": "asociaciondag/flarum-subscriptions",
+    "description": "Fork of the original flarum/subscriptions extension including the option to follow every new discussion automatically.",
     "type": "flarum-extension",
     "keywords": ["discussion"],
     "license": "MIT",
